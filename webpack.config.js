@@ -20,6 +20,10 @@ const config = {
             test: /\.js$/,
             loader: "babel-loader",
             exclude: /node_modules/,
+            options: {
+              cacheDirectory: true, //开启babel 缓存
+              cacheCompression: false, // 关闭文件压缩
+            },
           },
         ],
       },
@@ -29,6 +33,7 @@ const config = {
     new ESLintPlugin({
       context: path.resolve(__dirname, "src"), // 检测src的下面的文件,
       exclude: ["node_modules"],
+      cache: true,
     }),
     new HtmllPlugin({
       template: path.resolve(__dirname, "public/index.html"),

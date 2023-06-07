@@ -30,3 +30,5 @@
 ### 热更新
 
 ### Cache 缓存
+
+babel 和 eslint 都可以开启缓存
