@@ -54,9 +54,9 @@ const config = {
     new HtmllPlugin({
       template: path.resolve(__dirname, "public/index.html"),
     }),
-    // new TerserWebpackPlugin({
-    //   parallel: threads,
-    // }),
+    new TerserWebpackPlugin({
+      parallel: threads,
+    }),
   ],
   optimization: {
     minimize: true,
@@ -65,6 +65,7 @@ const config = {
         parallel: threads,
       }),
     ],
+    // usedExports: true,
   },
   mode: "production",
   devServer: {
