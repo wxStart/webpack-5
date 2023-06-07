@@ -32,3 +32,9 @@
 ### Cache 缓存
 
 babel 和 eslint 都可以开启缓存
+
+### 多核处理 Thead
+
+- 处理 js 文件使用 thread-loader
+- 压缩 js 文件使用 terser-webpack-plugin
+- eslint 使用 eslint-webpack-plugin
