@@ -19,8 +19,14 @@
 - development 开发模式
 - production 生产模式
 
+### 代码检测 eslint 的使用
 
-### 代码检测 eslint 的使用 
 `npm install eslint-webpack-plugin eslint --save-dev`
+
 ### 代码编译
+
 `npm install -D babel-loader @babel/core @babel/preset-env webpack`
+
+### 热更新
+
+### Cache 缓存

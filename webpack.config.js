@@ -10,21 +10,35 @@ const config = {
   module: {
     rules: [
       {
-        test: /\.js$/,
-        loader: "babel-loader",
-        exclude: /node_modules/,
+        oneOf: [
+          {
+            test: /\.css$/,
+            use: ["style-loader", "css-loader"],
+            exclude: /node_modules/,
+          },
+          {
+            test: /\.js$/,
+            loader: "babel-loader",
+            exclude: /node_modules/,
+          },
+        ],
       },
     ],
   },
   plugins: [
     new ESLintPlugin({
-      context: path.resolve(__dirname, "src"), // 检测src的下面的文件
+      context: path.resolve(__dirname, "src"), // 检测src的下面的文件,
+      exclude: ["node_modules"],
     }),
     new HtmllPlugin({
       template: path.resolve(__dirname, "public/index.html"),
     }),
   ],
   mode: "development",
+  devServer: {
+    static: "./dist",
+    hot: true,
+  },
 };
 
 module.exports = config;
