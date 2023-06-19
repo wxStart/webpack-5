@@ -1,6 +1,8 @@
 const path = require("path");
 const EslitWebpackPlugin = require("eslint-webpack-plugin");
 const HtmlPlugin = require("html-webpack-plugin");
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+
 
 const getStyleLoaders = (pre) => {
   return [
@@ -66,6 +68,7 @@ module.exports = {
         options: {
           cacheDirectory: true,
           cacheCompression: false,
+          plugins: ["react-refresh/babel"], // hmr
         },
       },
     ],
@@ -83,6 +86,7 @@ module.exports = {
     new HtmlPlugin({
       template: path.resolve(__dirname, "../public/index.html"),
     }),
+    new ReactRefreshWebpackPlugin() // hrm
   ],
   mode: "development",
   devtool: "cheap-module-source-map",
@@ -94,10 +98,14 @@ module.exports = {
       name: (entrypoint) => `runtime-${entrypoint.name}.js`,
     },
   },
+  resolve: {
+    extensions: [".jsx", ".js", "json"],
+  },
   devServer: {
     host: "localhost",
     port: 3000,
     open: true,
     hot: true,
+    historyApiFallback: true,
   },
 };
