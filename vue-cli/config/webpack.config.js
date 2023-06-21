@@ -1,8 +1,6 @@
 const path = require("path");
 const EslitWebpackPlugin = require("eslint-webpack-plugin");
 const HtmlPlugin = require("html-webpack-plugin");
-const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
-
 const MiniCssExtractPlugin = require("mini-css-extract-plugin"); // css提取单独文件
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin"); // css压缩
 
@@ -11,11 +9,19 @@ const ImageMinimizerPlugin = require("image-minimizer-webpack-plugin"); // 图�
 
 const CopyPlugin = require("copy-webpack-plugin");
 
+const { VueLoaderPlugin } = require("vue-loader");
+const { DefinePlugin } = require("webpack");
+
+const AutoImport = require("unplugin-auto-import/webpack");
+const Components = require("unplugin-vue-components/webpack");
+// const ElementPlus = require("unplugin-element-plus/webpack");
+const { ElementPlusResolver } = require("unplugin-vue-components/resolvers");
+
 const isProd = process.env.NODE_ENV === "production";
 
 const getStyleLoaders = (pre) => {
   return [
-    isProd ? MiniCssExtractPlugin.loader : "style-loader",
+    isProd ? MiniCssExtractPlugin.loader : "vue-style-loader",
     "css-loader",
     {
       // 配合package.json中的browsersList 指定兼容
@@ -26,7 +32,15 @@ const getStyleLoaders = (pre) => {
         },
       },
     },
-    pre,
+    pre && {
+      loader: pre,
+      options:
+        pre === "sass-loader"
+          ? {
+              additionalData: `@use "@styles/element/index.scss" as *;`,
+            }
+          : {},
+    },
   ].filter(Boolean);
 };
 
@@ -78,13 +92,23 @@ module.exports = {
         type: "asset/resource",
       },
       {
-        test: /\.jsx?$/,
+        test: /\.js?$/,
         include: path.resolve(__dirname, "../src"),
         loader: "babel-loader",
         options: {
           cacheDirectory: true,
           cacheCompression: false,
-          plugins: [!isProd && "react-refresh/babel"].filter(Boolean), // hmr
+        },
+      },
+      {
+        test: /\.vue$/,
+        loader: "vue-loader",
+        options: {
+          // 开启缓存  第二次打包更快
+          cacheDirectory: path.resolve(
+            __dirname,
+            "../node_modules/.cache/vue-loader"
+          ),
         },
       },
     ],
@@ -101,6 +125,11 @@ module.exports = {
     }),
     new HtmlPlugin({
       template: path.resolve(__dirname, "../public/index.html"),
+    }),
+    new VueLoaderPlugin(),
+    new DefinePlugin({
+      __VUE_OPTIONS_API__: true,
+      __VUE_PROD_DEVTOOLS__: false,
     }),
     isProd &&
       new MiniCssExtractPlugin({
@@ -119,22 +148,33 @@ module.exports = {
           },
         ],
       }),
-    !isProd && new ReactRefreshWebpackPlugin(), // hrm
+    AutoImport({
+      // element-plus 按需引入
+      resolvers: [ElementPlusResolver()],
+    }),
+    Components({
+      resolvers: [
+        ElementPlusResolver({
+          importStyle: "sass",
+        }),
+      ],
+    }),
   ].filter(Boolean),
   mode: isProd ? "production" : "development",
   devtool: isProd ? "source-map" : "cheap-module-source-map",
   optimization: {
     splitChunks: {
       chunks: "all",
+      //  打包拆离分组
       cacheGroups: {
         react: {
-          test: /[\\/]node_modules[\\/]react(.*)?[\\/]/,
-          name: "chunk-react",
+          test: /[\\/]node_modules[\\/]vue(.*)?[\\/]/,
+          name: "chunk-vue",
           priority: 40,
         },
         antd: {
-          test: /[\\/]node_modules[\\/]antd(.*)?[\\/]/,
-          name: "chunk-antd",
+          test: /[\\/]node_modules[\\/]element-plus(.*)?[\\/]/,
+          name: "chunk-element-plus",
           priority: 30,
         },
         libs: {
@@ -188,7 +228,10 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: [".jsx", ".js", "json"],
+    extensions: [".vue", ".js", "json"],
+    alias: {
+      "@styles": path.resolve(__dirname, "../src/styles"),
+    },
   },
   devServer: {
     host: "localhost",
@@ -197,4 +240,5 @@ module.exports = {
     hot: true,
     historyApiFallback: true,
   },
+  performance: false, //关闭性能分析
 };

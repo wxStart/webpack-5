@@ -1,12 +1,12 @@
 const path = require("path");
 const EslitWebpackPlugin = require("eslint-webpack-plugin");
 const HtmlPlugin = require("html-webpack-plugin");
-const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
-
+const { VueLoaderPlugin } = require("vue-loader");
+const { DefinePlugin } = require("webpack");
 
 const getStyleLoaders = (pre) => {
   return [
-    "style-loader",
+    "vue-style-loader",
     "css-loader",
     {
       // 配合package.json中的browsersList 指定兼容
@@ -17,7 +17,7 @@ const getStyleLoaders = (pre) => {
         },
       },
     },
-    pre,
+    pre
   ].filter(Boolean);
 };
 
@@ -62,14 +62,26 @@ module.exports = {
         type: "asset/resource",
       },
       {
-        test: /\.jsx?$/,
+        test: /\.js?$/,
         include: path.resolve(__dirname, "../src"),
         loader: "babel-loader",
         options: {
           cacheDirectory: true,
           cacheCompression: false,
-          plugins: ["react-refresh/babel"], // hmr
         },
+      },
+      {
+        test: /\.js?$/,
+        include: path.resolve(__dirname, "../src"),
+        loader: "babel-loader",
+        options: {
+          cacheDirectory: true,
+          cacheCompression: false,
+        },
+      },
+      {
+        test: /\.vue$/,
+        loader: "vue-loader",
       },
     ],
   },
@@ -86,7 +98,11 @@ module.exports = {
     new HtmlPlugin({
       template: path.resolve(__dirname, "../public/index.html"),
     }),
-    new ReactRefreshWebpackPlugin() // hrm
+    new VueLoaderPlugin(),
+    new DefinePlugin({
+      __VUE_OPTIONS_API__: true,
+      __VUE_PROD_DEVTOOLS__: false,
+    }),
   ],
   mode: "development",
   devtool: "cheap-module-source-map",
@@ -99,7 +115,8 @@ module.exports = {
     },
   },
   resolve: {
-    extensions: [".jsx", ".js", "json"],
+    extensions: [".vue", ".js", "json"],
+   
   },
   devServer: {
     host: "localhost",

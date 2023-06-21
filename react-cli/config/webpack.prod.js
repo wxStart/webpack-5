@@ -43,15 +43,15 @@ module.exports = {
       },
       {
         test: /\.less$/,
-        use: getStyleLoaders("less-loder"),
+        use: getStyleLoaders("less-loader"),
       },
       {
         test: /\.s[ac]ss$/,
-        use: getStyleLoaders("sass-loder"),
+        use: getStyleLoaders("sass-loader"),
       },
       {
         test: /\.styl$/,
-        use: getStyleLoaders("stylus-loder"),
+        use: getStyleLoaders("stylus-loader"),
       },
 
       {

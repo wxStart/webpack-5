@@ -1,8 +1,6 @@
 const path = require("path");
 const EslitWebpackPlugin = require("eslint-webpack-plugin");
 const HtmlPlugin = require("html-webpack-plugin");
-const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
-
 const MiniCssExtractPlugin = require("mini-css-extract-plugin"); // css提取单独文件
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin"); // css压缩
 
@@ -11,11 +9,13 @@ const ImageMinimizerPlugin = require("image-minimizer-webpack-plugin"); // 图�
 
 const CopyPlugin = require("copy-webpack-plugin");
 
-const isProd = process.env.NODE_ENV === "production";
+const { VueLoaderPlugin } = require("vue-loader");
+const { DefinePlugin } = require("webpack");
+
 
 const getStyleLoaders = (pre) => {
   return [
-    isProd ? MiniCssExtractPlugin.loader : "style-loader",
+    MiniCssExtractPlugin.loader,
     "css-loader",
     {
       // 配合package.json中的browsersList 指定兼容
@@ -33,16 +33,10 @@ const getStyleLoaders = (pre) => {
 module.exports = {
   entry: "./src/main.js",
   output: {
-    path: isProd ? path.resolve(__dirname, "../dist") : undefined,
-    filename: isProd
-      ? "static/js/[name].[contenthash:10].js"
-      : "static/js/[name].js",
-    chunkFilename: isProd
-      ? "static/js/[name].[contenthash:10].chunk.js"
-      : "static/js/[name].chunk.js",
-    assetModuleFilename: isProd
-      ? "static/assets/[hash:10][ext][query]"
-      : "static/assets/[hash:10][ext][query]",
+    path: path.resolve(__dirname, "../dist"),
+    filename: "static/js/[name].[contenthash:10].js",
+    chunkFilename: "static/js/[name].[contenthash:10].chunk.js",
+    assetModuleFilename: "static/assets/[hash:10][ext][query]",
     clean: true,
   },
   module: {
@@ -78,14 +72,17 @@ module.exports = {
         type: "asset/resource",
       },
       {
-        test: /\.jsx?$/,
+        test: /\.js?$/,
         include: path.resolve(__dirname, "../src"),
         loader: "babel-loader",
         options: {
           cacheDirectory: true,
           cacheCompression: false,
-          plugins: [!isProd && "react-refresh/babel"].filter(Boolean), // hmr
         },
+      },
+      {
+        test: /\.vue$/,
+        loader: "vue-loader",
       },
     ],
   },
@@ -102,52 +99,36 @@ module.exports = {
     new HtmlPlugin({
       template: path.resolve(__dirname, "../public/index.html"),
     }),
-    isProd &&
-      new MiniCssExtractPlugin({
-        filename: "static/css/[name].[contenthash:10].css",
-        chunkFilename: "static/css/[name].[contenthash:10].chunk.css",
-      }),
-    isProd &&
-      new CopyPlugin({
-        patterns: [
-          {
-            from: path.resolve(__dirname, "../public"),
-            to: path.resolve(__dirname, "../dist"),
-            globOptions: {
-              ignore: ["**/index.html"],
-            },
+    new VueLoaderPlugin(),
+    new DefinePlugin({
+      __VUE_OPTIONS_API__: true,
+      __VUE_PROD_DEVTOOLS__: false,
+    }),
+    new MiniCssExtractPlugin({
+      filename: "static/css/[name].[contenthash:10].css",
+      chunkFilename: "static/css/[name].[contenthash:10].chunk.css",
+    }),
+    new CopyPlugin({
+      patterns: [
+        {
+          from: path.resolve(__dirname, "../public"),
+          to: path.resolve(__dirname, "../dist"),
+          globOptions: {
+            ignore: ["**/index.html"],
           },
-        ],
-      }),
-    !isProd && new ReactRefreshWebpackPlugin(), // hrm
-  ].filter(Boolean),
-  mode: isProd ? "production" : "development",
-  devtool: isProd ? "source-map" : "cheap-module-source-map",
+        },
+      ],
+    }),
+  ],
+  mode: "production",
+  devtool: "cheap-module-source-map",
   optimization: {
     splitChunks: {
       chunks: "all",
-      cacheGroups: {
-        react: {
-          test: /[\\/]node_modules[\\/]react(.*)?[\\/]/,
-          name: "chunk-react",
-          priority: 40,
-        },
-        antd: {
-          test: /[\\/]node_modules[\\/]antd(.*)?[\\/]/,
-          name: "chunk-antd",
-          priority: 30,
-        },
-        libs: {
-          test: /[\\/]node_modules[\\/]/,
-          name: "chunk-libs",
-          priority: 20,
-        },
-      },
     },
     runtimeChunk: {
       name: (entrypoint) => `runtime-${entrypoint.name}.js`,
     },
-    minimize: isProd,
     minimizer: [
       new TerserPlugin(),
       new CssMinimizerPlugin(),
@@ -188,13 +169,6 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: [".jsx", ".js", "json"],
-  },
-  devServer: {
-    host: "localhost",
-    port: 3000,
-    open: true,
-    hot: true,
-    historyApiFallback: true,
+    extensions: [".vue", ".js", "json"],
   },
 };
