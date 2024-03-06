@@ -1,18 +1,24 @@
-const path = require("path");
-const HtmllPlugin = require("html-webpack-plugin");
-const BannerWebpackPlugin = require("./plugins/custom/banner");
-const CleanWebpackPlugin = require("./plugins/custom/clean");
-const AnalyzeWebpackPlugin = require("./plugins/custom/analyze");
-const InlineChunkWebpackPlugin = require("./plugins/custom/inlineChunk");
+const path = require('path');
+const HtmllPlugin = require('html-webpack-plugin');
+const BannerWebpackPlugin = require('./plugins/custom/banner');
+const CleanWebpackPlugin = require('./plugins/custom/clean');
+const AnalyzeWebpackPlugin = require('./plugins/custom/analyze');
+const InlineChunkWebpackPlugin = require('./plugins/custom/inlineChunk');
 
 const config = {
-  entry: "./src/main.js",
+  entry: './src/main.js',
   output: {
-    path: path.resolve(__dirname, "dist"),
-    filename: "js/[name].js",
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'js/[name].js',
+    clean: true,
   },
   module: {
     rules: [
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader'],
+        exclude: /node_modules/,
+      },
       // {
       //   test: /\.js$/,
       //   use: [
@@ -25,10 +31,7 @@ const config = {
         test: /\.js$/,
         use: [
           {
-            loader: "./loaders/custom/babel/babel-loader.js",
-            options: {
-              presets: ["@babel/preset-env"],
-            },
+            loader: './loaders/custom/babel/babel-loader.js',
           },
           // {
           //   loader: "./loaders/custom/banner/banner-loader.js",
@@ -51,32 +54,39 @@ const config = {
           // {
           //   loader: "./loaders/pitch-loader.js",
           // },
-
-        
         ],
+      },
+      {
+        test: /\.png$/,
+        use: [
+          {
+            loader: './loaders/custom/file/file-loader.js',
+          },
+        ],
+        type: 'javascript/auto', // 这里可以阻止 webpack默认对图片的操作
       },
     ],
   },
   plugins: [
-    // new HtmllPlugin({
-    //   template: path.resolve(__dirname, "public/index.html"),
-    // }),
-    // new BannerWebpackPlugin(),
-    // new CleanWebpackPlugin(),
-    // new AnalyzeWebpackPlugin(),
-    // new InlineChunkWebpackPlugin([/runtime(.*).js$/g]),
+    new HtmllPlugin({
+      template: path.resolve(__dirname, 'public/index.html'),
+    }),
+    new BannerWebpackPlugin(),
+    new CleanWebpackPlugin(),
+    new AnalyzeWebpackPlugin(),
+    new InlineChunkWebpackPlugin([/runtime(.*).js$/g]),
   ],
   optimization: {
     splitChunks: {
-      chunks: "all",
+      chunks: 'all',
     },
     runtimeChunk: {
       name: (entrypoint) => `runtime-${entrypoint.name}.js`,
     },
   },
-  mode: "development",
+  mode: 'development',
   devServer: {
-    static: "./dist",
+    static: './dist',
     hot: true,
   },
 };
