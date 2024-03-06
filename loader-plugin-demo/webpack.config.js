@@ -24,12 +24,12 @@ const config = {
       {
         test: /\.js$/,
         use: [
-          // {
-          //   loader: "./loaders/custom/babel/babel-loader.js",
-          //   options: {
-          //     presets: ["@babel/preset-env"],
-          //   },
-          // },
+          {
+            loader: "./loaders/custom/babel/babel-loader.js",
+            options: {
+              presets: ["@babel/preset-env"],
+            },
+          },
           // {
           //   loader: "./loaders/custom/banner/banner-loader.js",
           //   options: {
@@ -51,18 +51,20 @@ const config = {
           // {
           //   loader: "./loaders/pitch-loader.js",
           // },
+
+        
         ],
       },
     ],
   },
   plugins: [
-    new HtmllPlugin({
-      template: path.resolve(__dirname, "public/index.html"),
-    }),
-    new BannerWebpackPlugin(),
-    new CleanWebpackPlugin(),
-    new AnalyzeWebpackPlugin(),
-    new InlineChunkWebpackPlugin([/runtime(.*).js$/g]),
+    // new HtmllPlugin({
+    //   template: path.resolve(__dirname, "public/index.html"),
+    // }),
+    // new BannerWebpackPlugin(),
+    // new CleanWebpackPlugin(),
+    // new AnalyzeWebpackPlugin(),
+    // new InlineChunkWebpackPlugin([/runtime(.*).js$/g]),
   ],
   optimization: {
     splitChunks: {
@@ -72,7 +74,7 @@ const config = {
       name: (entrypoint) => `runtime-${entrypoint.name}.js`,
     },
   },
-  mode: "production",
+  mode: "development",
   devServer: {
     static: "./dist",
     hot: true,
