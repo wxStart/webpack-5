@@ -34,25 +34,25 @@ const config = {
             loader: './loaders/custom/babel/babel-loader.js',
           },
           {
-            loader: "./loaders/custom/banner/banner-loader.js",
+            loader: './loaders/custom/banner/banner-loader.js',
             options: {
-              author: "wx",
+              author: 'wx',
             },
           },
           {
-            loader: "./loaders/custom/clean-log/clean-log-loader.js",
+            loader: './loaders/custom/clean-log/clean-log-loader.js',
           },
           {
-            loader: "./loaders/sync-loader.js",
+            loader: './loaders/sync-loader.js',
           },
           {
-            loader: "./loaders/async-loader.js",
+            loader: './loaders/async-loader.js',
           },
           {
-            loader: "./loaders/raw-loader.js",
+            loader: './loaders/raw-loader.js',
           },
           {
-            loader: "./loaders/pitch-loader.js",
+            loader: './loaders/pitch-loader.js',
           },
         ],
       },
@@ -84,7 +84,7 @@ const config = {
       name: (entrypoint) => `runtime-${entrypoint.name}.js`,
     },
   },
-  mode: 'development',
+  // mode: 'development',
   devServer: {
     static: './dist',
     hot: true,
