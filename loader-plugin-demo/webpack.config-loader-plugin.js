@@ -68,13 +68,13 @@ const config = {
     ],
   },
   plugins: [
-    new HtmllPlugin({
-      template: path.resolve(__dirname, 'public/index.html'),
-    }),
-    new BannerWebpackPlugin(),
-    new CleanWebpackPlugin(),
-    new AnalyzeWebpackPlugin(),
-    new InlineChunkWebpackPlugin([/runtime(.*).js$/g]),
+    // new HtmllPlugin({
+    //   template: path.resolve(__dirname, 'public/index.html'),
+    // }),
+    // new BannerWebpackPlugin(),
+    // new CleanWebpackPlugin(),
+    // new AnalyzeWebpackPlugin(),
+    // new InlineChunkWebpackPlugin([/runtime(.*).js$/g]),
   ],
   optimization: {
     splitChunks: {

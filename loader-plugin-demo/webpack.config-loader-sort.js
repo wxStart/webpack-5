@@ -29,33 +29,42 @@ const config = {
       // },
       {
         test: /\.js$/,
+        enforce: 'post',
         use: [
           {
-            loader: './loaders/custom/babel/babel-loader.js',
-          },
-          {
-            loader: "./loaders/custom/banner/banner-loader.js",
-            options: {
-              author: "wx",
-            },
-          },
-          {
-            loader: "./loaders/custom/clean-log/clean-log-loader.js",
-          },
-          {
-            loader: "./loaders/sync-loader.js",
-          },
-          {
-            loader: "./loaders/async-loader.js",
-          },
-          {
-            loader: "./loaders/raw-loader.js",
-          },
-          {
-            loader: "./loaders/pitch-loader.js",
+            loader: './loader-sort/loader-post.js',
           },
         ],
       },
+      
+      {
+        test: /\.js$/,
+        enforce: 'pre',
+        use: [
+          {
+            loader: './loader-sort/loader-pre.js',
+          },
+        ],
+      },
+
+      {
+        test: /\.js$/,
+        use: [
+          {
+            loader: './loader-sort/loader.js',
+          },
+        ],
+      },
+      {
+        test: /\.js$/,
+        enforce: 'pre',
+        use: [
+          {
+            loader: './loader-sort/loader-pre.js',
+          },
+        ],
+      },
+
       {
         test: /\.png$/,
         use: [
@@ -68,13 +77,13 @@ const config = {
     ],
   },
   plugins: [
-    new HtmllPlugin({
-      template: path.resolve(__dirname, 'public/index.html'),
-    }),
-    new BannerWebpackPlugin(),
-    new CleanWebpackPlugin(),
-    new AnalyzeWebpackPlugin(),
-    new InlineChunkWebpackPlugin([/runtime(.*).js$/g]),
+    // new HtmllPlugin({
+    //   template: path.resolve(__dirname, 'public/index.html'),
+    // }),
+    // new BannerWebpackPlugin(),
+    // new CleanWebpackPlugin(),
+    // new AnalyzeWebpackPlugin(),
+    // new InlineChunkWebpackPlugin([/runtime(.*).js$/g]),
   ],
   optimization: {
     splitChunks: {
