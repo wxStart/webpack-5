@@ -7,6 +7,7 @@ class BannerWebpackPlugin {
       (compilation, callback) => {
         // 1. 获取即将输出的资源文件  ： compilation.assets;
         // 2. 过滤只保留js和css资源
+        debugger
         const extensions = ["css", "js"];
         const assets = Object.keys(compilation.assets).filter((assetsPath) => {
           const split = assetsPath.split(".");

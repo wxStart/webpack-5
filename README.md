@@ -42,3 +42,12 @@ babel 和 eslint 都可以开启缓存
 ### Tree Shaking 树摇
 
 1. 生产模式就是自动打开
+
+### node程序调试
+```json
+  "scripts": {
+    "dev": "webpack",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "debug": "node --inspect-brk ./node_modules/webpack-cli/bin/cli.js" // 调试node程序
+  },
+```
