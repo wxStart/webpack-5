@@ -11,6 +11,36 @@ class InlineChunkWebpackPlugin {
       const hooks = HtmlWebpackPlugin.getHooks(compilation);
       // 2. 注册hooks  alterAssetTagGroups
       hooks.alterAssetTagGroups.tap(pluginName, (assets) => {
+        console.log('assets:headTags ',  assets.headTags);
+        console.log('assets:bodyTags ',  assets.bodyTags);
+
+
+
+        /**  assets.headTags：
+         [
+          {
+            tagName: 'script',
+            voidTag: false,
+            meta: { plugin: 'html-webpack-plugin' },
+            attributes: { defer: true, type: undefined, src: 'js/runtime-main.js.js' }
+          },
+          {
+            tagName: 'script',
+            voidTag: false,
+            meta: { plugin: 'html-webpack-plugin' },
+            attributes: { defer: true, type: undefined, src: 'js/main.js' }
+          }
+          ] 
+
+
+          只需要将  assets.headTags 中的内容变为
+
+          {
+            tagName: "script",
+            innerHTML: assets[filePath].source(),
+            closeTag: true,
+          } 结构就可以 转为行内的js了
+         */
         assets.headTags = this.getInlineChunk(
           assets.headTags,
           compilation.assets
@@ -40,6 +70,8 @@ class InlineChunkWebpackPlugin {
       const test = this.tests.some((test) => test.test(filePath));
       //   if (!/runtime(.*).js$/g.test(filePath)) return tag;
       if (!test) return tag;
+
+
 
       return {
         tagName: "script",
